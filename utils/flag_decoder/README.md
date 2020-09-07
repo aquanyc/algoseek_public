@@ -10,14 +10,14 @@ Python 2.7 or 3.x is required to run the script.
 
 ## Command-Line Arguments
 
-Short | Long          | Description
--------------------------------------------------------
--qf   |  --quote_flag | Decode a single quote flag 
--tf   |  --trade_flag | Decode a single trade flag 
--i    |  --in         | Decode condition codes from algoseek TAQ or Trade Only input file
--o    |  --out        | Write decoded lines from the input file to the specified output file 
--b    |  --start      | Start time (HH:MM:SS.SSS, HH:MM:SS, HH:MM or HH format)
--e    |  --stop       | Stop time (HH:MM:SS.SSS, HH:MM:SS, HH:MM or HH format)
+| Short | Long          | Description                                                          |
+| ----- | ------------- | -------------------------------------------------------------------- |
+| -qf   |  --quote_flag | Decode a single quote flag                                           |
+| -tf   |  --trade_flag | Decode a single trade flag                                           |
+| -i    |  --in         | Decode condition codes from algoseek TAQ or Trade Only file          |
+| -o    |  --out        | Write decoded lines from the input file to the specified output file | 
+| -b    |  --start      | Start time (HH:MM:SS.SSS, HH:MM:SS, HH:MM or HH format)              |
+| -e    |  --stop       | Stop time (HH:MM:SS.SSS, HH:MM:SS, HH:MM or HH format)               |
 
 ## Usage
 
