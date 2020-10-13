@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# Copyright 2018 AlgoSeek, LLC. All Rights Reserved
 
 import sys
 import csv

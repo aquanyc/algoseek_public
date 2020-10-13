@@ -1,7 +1,9 @@
+# Copyright 2018 AlgoSeek, LLC. All Rights Reserved
+
 import sys
 # require python >=3.6
 if sys.version_info < (3, 6):
-    sys.exit("ERROR: Python 6.6 or later is required")
+    sys.exit("ERROR: Python 3.6 or later is required")
 
 import pathlib
 import zipfile
@@ -52,7 +54,7 @@ def setup_parser():
         '-n', '--num_proc',
         type=int,
         default=2,
-        help='Specifies  the number of jobs to run simultaneously'
+        help='Specifies the number of jobs to run simultaneously'
     )
     return parser
 
