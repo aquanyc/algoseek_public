@@ -16,18 +16,21 @@ Having data partitioned by year reduces the amount to be downloaded but
 on the other hand, it is convenient to have one file per SecID when working with data.
 This script allows getting updates for the data partitioned by year and merging it into a dataset with a single file per SecID.
 
+Currently, can be used for buckets: us-equity-1min-trades-adjusted-secid-yyyy, us-equity-cumulative-backward-adjustment-secid-yyyy.
+
 ## Command-Line Arguments
 
 Positional arguments:
 
-loc_dir - A local directory to sync with data buckets
+bucket_name - Name of bucket to sync in format: bucket-name-yyyy
 
-merge_dir - A directory to store merged data
+loc_dir - A local directory to sync with data buckets
 
 Optional arguments:
 
 | Name           | Description                                                 |
 | -------------- | ----------------------------------------------------------- |
+|  --merge_dir   | A directory to store merged data. Default: None             |
 |  --start_year  | Start year for data. Default: 2007                          |
 |  --end_year    | End year for data. Default: current year                    |
 |  --threads     | The number of parallel processes to apply merge. Default: 1 |
@@ -35,19 +38,18 @@ Optional arguments:
 
 ## Usage
 
-Get updates for full universe of symbols from 2010 to 2019 separated by year located in `algoseek_data` folder and merge all data to folder `algoseek_data_merged` using 8 processes and and aws profile `algoseek`:
+Get updates for full universe of symbols for Equity Trade Adjusted Minute Bars dataset from 2010 to 2019 separated by year located in `algoseek_data` folder and merge all data to folder `algoseek_data_merged` using 8 processes and aws profile `algoseek`:
 ```
-python3 merge_by_secid.py algoseek_data algoseek_data_merged --start_year 2010 --end_year 2019 --threads 8 --profile algoseek
+python3 merge_by_secid.py us-equity-1min-trades-adjusted-secid-yyyy algoseek_data --merge_dir algoseek_data_merged --start_year 2010 --end_year 2019 --threads 8 --profile algoseek
 ```
 
-Fetch the history from 2015 to present using default AWS keys and 4 processes to merge the data:
+Fetch the history from 2015 to present using default AWS keys without merging the data:
 ```
-python3 merge_by_secid.py algoseek_data algoseek_data_merged --start_year 2015 --threads 4
+python3 merge_by_secid.py us-equity-cumulative-backward-adjustment-secid-yyyy algoseek_data --start_year 2015
 ```
 
 **Note:** if you are not using named AWS profiles and have just one pair of AWS keys configured you don't need to use the `profile` option.
 
 ### To-Do
 
-1. Choice: merge or not merge
-2. Update only a list of symbols 
+1. Update only a list of symbols 
