@@ -14,12 +14,12 @@ def setup_parser():
     parser.add_argument(
         '--bucket_name', 
         required=True,
-        help='A name of the source S3 bucket to download from'
+        help='A name of the source S3 bucket to download data from'
     )
     parser.add_argument(
         '--loc_dir', 
         required=True, type=pathlib.Path,
-        help='A local destination directory path'
+        help='A path to the local destination directory'
     )
     parser.add_argument(
         '--start_date',
@@ -34,7 +34,7 @@ def setup_parser():
     parser.add_argument(
         "--symbols",
         nargs="*", default=[],
-        help="A space separated list of symbols (base symbols for futures) to download for each date. Default: all symbols"
+        help="A space separated list of symbols (or base symbols for futures) to download for each date. Default: all symbols"
     )
     parser.add_argument(
         '--threads', type=int, default=1,
@@ -46,7 +46,7 @@ def setup_parser():
     )
     parser.add_argument(
         '--sync',  action='store_true',
-        help='Synchronize mode: do not download files from the bucket that already exist locally'
+        help='Enable synchronize mode (copy only new files from the bucket)'
     )
     parser.add_argument(
         '-v', '--verbose', action='store_true',
