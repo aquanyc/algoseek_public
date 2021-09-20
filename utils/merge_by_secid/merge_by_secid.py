@@ -39,6 +39,14 @@ def setup_parser():
         help='End year for data. Default: current year'
     )
     parser.add_argument(
+        '--secids', nargs='*',
+        help='A list of secids to be merged'
+    )
+    parser.add_argument(
+        '--secids_file', default=None, type=Path,
+        help='A file with seсids to be merged'
+    )
+    parser.add_argument(
         '--threads', type=int, default=1,
         help='The number of parallel processes to apply merge. Default: 1'
     )
@@ -76,10 +84,20 @@ args = parser.parse_args()
 
 # update full universe of data organized by year by SecId
 for year in range(args.start_year, args.end_year + 1):
+    secids = None
+    if args.secids_file:
+        with open(args.secids_file) as f_secid:
+            secids = f_secid.read().splitlines()
+    if args.secids:
+        secids = args.secids
     command = [
         "aws", "s3", "sync", f"s3://{args.bucket_name}".replace('yyyy', str(year)), 
         f"{args.loc_dir}/{year}", "--profile", args.profile, "--request-payer", "requester"
     ]
+    if secids:
+        command.extend(["--exclude", "*"])
+        for secid in secids:
+            command.extend(["--include", f"{secid[0:2]}/{secid}.*"])
     subprocess.run(command)
 
 # for merging data by SecId
@@ -90,17 +108,14 @@ if args.merge_dir:
     target_files = args.loc_dir.glob(f"*/*/*")
     
     for file_path in sorted(target_files):
-        if 'daily-changes' not in file_path.parts:
-            secid = file_path.name.split('.')[0]
-            secid_groups[secid].append(file_path)
+        secid = file_path.name.split('.')[0]
+        if secids:
+            if secid in secids:
+                secid_groups[secid].append(file_path)
+        else:
+            if 'daily-changes' not in file_path.parts:
+                secid_groups[secid].append(file_path)
     
     # merge data by SecId
     with Pool(args.threads) as pool:
         pool.starmap(merge_by_secid, secid_groups.items())
-
-
-
-
-
-
-

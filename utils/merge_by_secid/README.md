@@ -33,6 +33,8 @@ Optional arguments:
 |  --merge_dir   | A directory to store merged data. Default: None             |
 |  --start_year  | Start year for data. Default: 2007                          |
 |  --end_year    | End year for data. Default: current year                    |
+|  --secids      | A list of secids to be merged                               |
+|  --secids_file | A file with seсids to be merged                             |
 |  --threads     | The number of parallel processes to apply merge. Default: 1 |
 |  --profile     | AWS profile name. Default: default (no profile)             |
 
@@ -43,6 +45,16 @@ Get updates for full universe of symbols for Equity Trade Adjusted Minute Bars d
 python3 merge_by_secid.py us-equity-1min-trades-adjusted-secid-yyyy algoseek_data --merge_dir algoseek_data_merged --start_year 2010 --end_year 2019 --threads 8 --profile algoseek
 ```
 
+Get updates for 33449 and 38497 SecIds for Equity Trade Adjusted Minute Bars dataset from 2010 to 2019 separated by year located in `algoseek_data` folder and merge all data to folder `algoseek_data_merged` using 2 processes and aws profile `algoseek`:
+```
+python3 merge_by_secid.py us-equity-1min-trades-adjusted-secid-yyyy algoseek_data --merge_dir algoseek_data_merged --start_year 2010 --end_year 2019 --secids 33449 38497 --threads 8 --profile algoseek
+```
+
+Get updates for a list of SecIds from `secids.csv` file for Equity Trade Adjusted Minute Bars dataset from 2010 to 2019 separated by year located in `algoseek_data` folder and merge all data to folder `algoseek_data_merged` using 8 processes and aws profile `algoseek`:
+```
+python3 merge_by_secid.py us-equity-1min-trades-adjusted-secid-yyyy algoseek_data --merge_dir algoseek_data_merged --start_year 2010 --end_year 2019 --secids_file secids.csv --threads 8 --profile algoseek
+```
+
 Fetch the history from 2015 to present using default AWS keys without merging the data:
 ```
 python3 merge_by_secid.py us-equity-cumulative-backward-adjustment-secid-yyyy algoseek_data --start_year 2015
@@ -50,6 +62,6 @@ python3 merge_by_secid.py us-equity-cumulative-backward-adjustment-secid-yyyy al
 
 **Note:** if you are not using named AWS profiles and have just one pair of AWS keys configured you don't need to use the `profile` option.
 
-### To-Do
+**Note:** if you are working with a list of secids you have to use just one optional argument --secids or --secids_file.
 
-1. Update only a list of symbols 
+**Note:** if you are using the file with secids, it should be one column with secids without header.
