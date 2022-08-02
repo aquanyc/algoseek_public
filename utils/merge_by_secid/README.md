@@ -17,6 +17,7 @@ on the other hand, it is convenient to have one file per SecID when working with
 This script allows getting updates for the data partitioned by year and merging it into a dataset with a single file per SecID.
 
 Also, this script allows getting updates for the data aggregated by trade date and partitioned by year.
+Please note that for this aggregation you cannot do any aggregations by ticker or SecId. Such option is available just for data aggregated by SecId.
 
 Currently, can be used for buckets: us-equity-1min-trades-adjusted-secid-yyyy, us-equity-1min-trades-adjusted-yyyy, and us-equity-cumulative-backward-adjustment-secid-yyyy.
 
@@ -52,9 +53,9 @@ Get updates for full universe of symbols for Equity Trade Adjusted Minute Bars d
 python3 merge_by_secid.py us-equity-1min-trades-adjusted-yyyy algoseek_data --tradedate_agg --start_year 2010 --end_year 2019 --profile algoseek
 ```
 
-Get updates for AAPL and IBM tickers for Equity Trade Adjusted Minute Bars dataset aggregated by trade date from 20100101 to 20190525 separated by year located in `algoseek_data` folder using 12 processes and aws profile `algoseek`:
+Get updates for AAPL and IBM tickers for Equity Trade Adjusted Minute Bars dataset aggregated by trade date from 20100101 to 20190525 separated by year located in `algoseek_data` folder using 2 processes and aws profile `algoseek`:
 ```
-python3 merge_by_secid.py us-equity-1min-trades-adjusted-yyyy algoseek_data --tradedate_agg --start_date 20100101 --end_date 20190525 --tickers AAPL IBM --threads 12 --profile algoseek
+python3 merge_by_secid.py us-equity-1min-trades-adjusted-yyyy algoseek_data --tradedate_agg --start_date 20100101 --end_date 20190525 --tickers AAPL IBM --threads 2 --profile algoseek
 ```
 
 Get updates for a list of tickers from `tickers.csv` file for Equity Trade Adjusted Minute Bars dataset aggregated by trade date from 20100101 to 20190525 separated by year located in `algoseek_data` folder using 8 processes and aws profile `algoseek`:

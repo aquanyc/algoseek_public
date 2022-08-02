@@ -39,7 +39,7 @@ def setup_parser():
     '''Command line arguments parser'''
     parser = argparse.ArgumentParser(description='Merger for All SecIds Data')
     parser.add_argument(
-        'bucket_name', help='Name of bucket to sync'
+        'bucket_name', help='Name of bucket to sync (e.g. us-equity-1min-trades-adjusted-yyyy)'
     )
     parser.add_argument(
         'loc_dir', type=Path, help='A local directory to sync with data buckets'
@@ -93,12 +93,19 @@ def setup_parser():
     return parser
 
 
-def tradedate_task(tradedate):
+def tradedate_task(tradedate, verbose=True):
     for ticker in tickers:
-        command = ["aws", "s3", "cp", f"s3://{args.bucket_name}/{tradedate}/{ticker[0]}/{ticker}.csv.gz".replace('yyyy', str(tradedate[:4])), 
-            f"{args.loc_dir}/{tradedate[:4]}/{tradedate}/{ticker[0]}/{ticker}.csv.gz", "--profile", args.profile, "--request-payer", "requester"]
-        
-        subprocess.run(command)
+        try:
+            command = f"aws s3 cp s3://{args.bucket_name.replace('yyyy', str(tradedate[:4]))}/{tradedate}/{ticker[0]}/{ticker}.csv.gz {args.loc_dir}/{tradedate[:4]}/{tradedate}/{ticker[0]}/{ticker}.csv.gz --profile {args.profile} --request-payer requester"
+            output = subprocess.check_output(command, stderr=subprocess.STDOUT, shell=True)
+            
+            if verbose:
+                print(output.decode().strip())
+        except subprocess.CalledProcessError as e:
+            error_text = f'fatal error: An error occurred (404) when calling the HeadObject operation: Key "{tradedate}/{ticker[0]}/{ticker}.csv.gz" does not exist'
+            
+            if error_text != e.output.decode().strip():
+                raise RuntimeError(e.output.decode())
 
 def merge_by_secid(secid, files):
     parent_dir = args.merge_dir / secid[:2]
@@ -115,11 +122,12 @@ def merge_by_secid(secid, files):
         
         for file_ in files:
             with open_func(file_, 'rt') as f_in:
-                f_in.readline()  # skip header
+                # skip header
+                f_in.readline()
+                
                 f_out.write(f_in.read())
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-
 
 parser = setup_parser()
 args = parser.parse_args()
@@ -145,27 +153,26 @@ if args.tradedate_agg:
                 f"{args.loc_dir}/{year}", "--profile", args.profile, "--request-payer", "requester"]
             
             subprocess.run(command)
-    
-    sys.exit()
 
-# update full universe of data organized by year by SecId
-for year in range(args.start_year, args.end_year + 1):
-    command = ["aws", "s3", "sync", f"s3://{args.bucket_name}".replace('yyyy', str(year)), 
-        f"{args.loc_dir}/{year}", "--profile", args.profile, "--request-payer", "requester"]
-    
+# update data organized by year by SecId
+else:
     secids = None
     if args.secids_file:
         with open(args.secids_file) as f_secid:
             secids = f_secid.read().splitlines()
     if args.secids:
-        secids = args.secids
+        secids = args.secids    
     
-    if secids:
-        command.extend(["--exclude", "*"])
-        for secid in secids:
-            command.extend(["--include", f"{secid[0:2]}/{secid}.*"])
-    
-    subprocess.run(command)
+    for year in range(args.start_year, args.end_year + 1):
+        command = ["aws", "s3", "sync", f"s3://{args.bucket_name}".replace('yyyy', str(year)), 
+            f"{args.loc_dir}/{year}", "--profile", args.profile, "--request-payer", "requester"]
+        
+        if secids:
+            command.extend(["--exclude", "*"])
+            for secid in secids:
+                command.extend(["--include", f"{secid[0:2]}/{secid}.*"])
+        
+        subprocess.run(command)
 
 # for merging data by SecId
 if args.merge_dir:
